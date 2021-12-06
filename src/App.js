@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import styled from "styled-components"
+
+const Screen = styled.div`
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  background: ${prop => prop.theme.backgroundColor};
+`
+const Text = styled.span`
+  color: ${prop => prop.theme.textColor};
+  font-size: 2rem;
+`
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Screen>
+      <Text>Hello</Text>
+    </Screen>
   );
 }
 
