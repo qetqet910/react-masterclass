@@ -96,7 +96,6 @@ function Coin() {
         (async () => {
             const res = await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json()
             setPrice(res)
-            console.log(res)
         })();
         (async () => {
             const res = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json()
@@ -107,7 +106,7 @@ function Coin() {
     return (
         <Container>
             <Header>
-                <Title>{state?.name || "Loading..."}</Title>
+                <Title>{state}</Title>
             </Header>
             <Main>
 

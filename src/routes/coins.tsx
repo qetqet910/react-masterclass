@@ -10,6 +10,7 @@ const Title = styled.h1`
 `
 
 const Container = styled.div`
+
 `
 const Header = styled.header`
     width: 100%;
@@ -21,6 +22,8 @@ const Header = styled.header`
     color: black;
 `
 const Main = styled.main`
+    max-width: 600px;
+    margin 0 auto;
     width: 100%;
     padding: 20px 0px
 `
@@ -52,6 +55,16 @@ const IMG = styled.img`
     height: 25px;
 `
 
+const Load = styled.div`
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: calc(1vw + 4em);
+    text-align: center;
+`
+
 interface CoinsAPI {
     id: string;
     name: string;
@@ -63,14 +76,17 @@ interface CoinsAPI {
 }
 
 
+
 function Coins() {
     const [Coins, setCoins] = useState<CoinsAPI[]>([]);
+    const [Loading, setLoading] = useState(false)
 
     useEffect(() => {
         (async () => {
             const res = await fetch("https://api.coinpaprika.com/v1/coins");
             const json = await res.json();
             setCoins(json.slice(0, 100))
+            setLoading(true)
         })()
     }, [])
     return (
@@ -79,7 +95,7 @@ function Coins() {
                 <Title>Coins</Title>
             </Header>
             <Main>
-                <CoinList>
+                {Loading ? <CoinList>
                     {Coins.map(item => <Coin key={item.id}>
                         <Link to={{
                             pathname: `/${item.id}`,
@@ -88,7 +104,7 @@ function Coins() {
                             <IMG src={`https://cryptoicon-api.vercel.app/api/icon/${item.symbol.toLowerCase()}`} />
                             {item.name} &rarr;</Link >
                     </Coin>)}
-                </CoinList>
+                </CoinList> : <Load>Loading...</Load>}
             </Main>
 
         </Container>
