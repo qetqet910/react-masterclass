@@ -1,6 +1,12 @@
 import styled from "styled-components"
-import { useLocation, useParams } from "react-router"
-import { useEffect, useState } from "react"
+import { useLocation, useParams, useRouteMatch } from "react-router"
+import { Switch, Route, Link } from 'react-router-dom';
+import Chart from "./chart";
+import Price from "./price";
+import { CoinInfo, CoinPrice } from "../api";
+import { useQuery } from "react-query";
+import Helmet from "react-helmet"
+
 
 const Title = styled.h1`
     display: inline;
@@ -10,18 +16,111 @@ const Title = styled.h1`
 `
 const Container = styled.div`
 `
+
 const Header = styled.header`
     width: 100%;
     height: calc(1vw + 2.6em);
     display: flex;
     justify-content: center;
-    alignitem-: center;
-    background-color: white;
+    align-items: center;
+    background: ${props => props.theme.textColor};
+    box-shadow: 0px -10px 30px ${props => props.theme.textColor};
     color: black;
 `
 const Main = styled.main`
+    max-width: 600px;
+    margin 0 auto;
     width: 100%;
-    padding: 20px 0px
+    padding: 20px 0px;
+    .apexcharts-tooltip {
+        background: #fff;
+        color: orange;
+    }
+    .apexcharts-toolbar{
+        background: transparent;
+        color: orange;
+    }
+`
+
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: ${props => props.theme.blockColor};
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: 0px 0px 4px ${props => props.theme.textColor};
+  margin: 20px;
+`;
+
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+
+const OverviewItem2 = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto 0px;
+  span:first-child {
+    font-size: 32px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  a{
+    color: white;
+    calc(1vw + 1em);
+    font-weight: bold;
+    transition: all .25s;
+    text-transform: uppercase;
+    &:hover{
+        color: ${props => props.theme.accentrColor}
+    }
+  }
+`;
+
+const Description = styled.p`
+  display: block;
+  margin: 20px;
+  padding: 16px 20px;
+  border-radius: 6px;
+  background-color: ${props => props.theme.blockColor};
+  box-shadow: 0px 0px 4px ${props => props.theme.textColor};
+  `;
+
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 20px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{ isActive: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: calc(1vw + .5em);
+  font-weight: 400;
+  background-color: ${props => props.theme.blockColor};
+  padding: 7px 0px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0px 0px 4px ${props => props.theme.textColor};
+  a {
+    display: block;
+    color: ${props => props.isActive ? props.theme.accentrColor : props.theme.textColor}
+}
+`;
+
+const RestedR = styled.div`
+  margin: 20px
 `
 interface Params {
     coinId: string
@@ -89,27 +188,74 @@ interface PriceData {
 function Coin() {
     const { coinId } = useParams<Params>()
     const { state } = useLocation<toState>();
-    const [price, setPrice] = useState<InfoData>()
-    const [tickers, settickers] = useState<PriceData>()
+    const chartMatch = useRouteMatch("/:coinId/Chart")
+    const priceMatch = useRouteMatch("/:coinId/Price")
 
-    useEffect(() => {
-        (async () => {
-            const res = await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json()
-            setPrice(res)
-        })();
-        (async () => {
-            const res = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json()
-            settickers(res)
-        })()
-    }, [coinId])
+    const { isLoading: CoinInfoLoading, data: CoinInfoData } = useQuery<InfoData>(["CoinInfo", coinId], () => CoinInfo(coinId))
+    const { isLoading: CoinPriceLoading, data: CoinPriceData } = useQuery<PriceData>(["CoinPrice", coinId], () => CoinPrice(coinId), {
+        refetchInterval: 1000
+    })
+
+    const Loading = CoinInfoLoading || CoinPriceLoading
 
     return (
         <Container>
+            <Helmet>
+                <title>{CoinInfoData?.name}</title>
+            </Helmet>
             <Header>
-                <Title>{state}</Title>
+                <Title>{state?.name ? state.name : Loading ? "Loading..." : CoinInfoData?.name}</Title>
             </Header>
             <Main>
-
+                <Overview>
+                    <OverviewItem2><span>{CoinInfoData?.name} Information</span></OverviewItem2>
+                    <OverviewItem2>
+                        <Link to={"/"}>Home</Link>
+                    </OverviewItem2>
+                </Overview>
+                <Overview>
+                    <OverviewItem>
+                        <span>Rank</span>
+                        <span>{CoinInfoData?.rank}</span>
+                    </OverviewItem>
+                    <OverviewItem>
+                        <span>Symbol</span>
+                        <span>${CoinInfoData?.symbol}</span>
+                    </OverviewItem>
+                    <OverviewItem>
+                        <span>Price</span>
+                        <span>{CoinPriceData?.quotes.USD.price}</span>
+                    </OverviewItem>
+                </Overview>
+                <Description>{CoinInfoData?.description}</Description>
+                <Overview>
+                    <OverviewItem>
+                        <span>Total Suply</span>
+                        <span>{CoinPriceData?.total_supply}</span>
+                    </OverviewItem>
+                    <OverviewItem>
+                        <span>Max Supply</span>
+                        <span>{CoinPriceData?.max_supply}</span>
+                    </OverviewItem>
+                </Overview>
+                <Tabs>
+                    <Tab isActive={chartMatch !== null}>
+                        <Link to={`/${coinId}/chart`}>Chart</Link>
+                    </Tab>
+                    <Tab isActive={priceMatch !== null}>
+                        <Link to={`/${coinId}/price`}>Price</Link>
+                    </Tab>
+                </Tabs>
+                <RestedR>
+                    <Switch>
+                        <Route path={"/:coinId/Chart"}>
+                            <Chart coinId={coinId} />
+                        </Route>
+                        <Route path={"/:coinId/Price"}>
+                            <Price coinId={coinId} />
+                        </Route>
+                    </Switch>
+                </RestedR>
             </Main>
         </Container>
     )

@@ -4,9 +4,9 @@ import Coins from './coins'
 
 function Router() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/react-masterclass">
             <Switch>
-                <Route path="/coinId">
+                <Route path="/:coinId">
                     <Coin />
                 </Route>
                 <Route path="/">

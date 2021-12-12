@@ -1,5 +1,6 @@
 import Router from "./routes/Router";
 import { createGlobalStyle } from "styled-components"
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 const Global = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -58,6 +59,9 @@ table {
   list-style: none;
   text-decoration: none;
   box-style: border;
+  ::-webkit-scrollbar{
+      display: none;
+  }
 }
 body{
   font-family: 'Source Sans Pro', sans-serif;
@@ -75,6 +79,7 @@ function App() {
     <>
       <Global />
       <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   )
 }

@@ -1,6 +1,8 @@
 import styled from "styled-components"
 import { Link } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useQuery } from "react-query"
+import { CoinFetcher } from "../api"
+import { Helmet } from "react-helmet"
 
 const Title = styled.h1`
     display: inline;
@@ -17,15 +19,16 @@ const Header = styled.header`
     height: calc(1vw + 2.6em);
     display: flex;
     justify-content: center;
-    alignitem-: center;
-    background-color: white;
+    align-items: center;
+    background: ${props => props.theme.textColor};
+    box-shadow: 0px -10px 30px ${props => props.theme.textColor};
     color: black;
 `
 const Main = styled.main`
     max-width: 600px;
     margin 0 auto;
     width: 100%;
-    padding: 20px 0px
+    padding: 20px 0px;
 `
 const CoinList = styled.ul`
     width: 100%;
@@ -38,9 +41,10 @@ const Coin = styled.li`
     background: white;
     a{
         display: flex;
-        item-align: center;
+        align-items: center;
         font-weight: bold;
         font-size: calc(1vw + .75em);
+        transition: all .25s;
         &:hover{
             color: ${props => props.theme.accentrColor} 
         }
@@ -51,8 +55,8 @@ const Coin = styled.li`
 `;
 
 const IMG = styled.img`
-    width: 25px;
-    height: 25px;
+    width: 34px;
+    height: 34px;
 `
 
 const Load = styled.div`
@@ -65,38 +69,32 @@ const Load = styled.div`
     text-align: center;
 `
 
-interface CoinsAPI {
+interface ICoin {
     id: string;
-    name: string;
-    symbol: string;
-    rank: number;
-    is_new: boolean;
     is_active: boolean;
+    is_new: boolean;
+    name: string;
+    rank: number;
+    symbol: string;
     type: string;
 }
 
 
-
 function Coins() {
-    const [Coins, setCoins] = useState<CoinsAPI[]>([]);
-    const [Loading, setLoading] = useState(false)
+    const { isLoading, data } = useQuery<ICoin[]>("FCoins", CoinFetcher)
+    console.log(data)
 
-    useEffect(() => {
-        (async () => {
-            const res = await fetch("https://api.coinpaprika.com/v1/coins");
-            const json = await res.json();
-            setCoins(json.slice(0, 100))
-            setLoading(true)
-        })()
-    }, [])
     return (
         <Container>
+            <Helmet>
+                <title>다운비트</title>
+            </Helmet>
             <Header>
-                <Title>Coins</Title>
+                <Title>다운비트</Title>
             </Header>
             <Main>
-                {Loading ? <CoinList>
-                    {Coins.map(item => <Coin key={item.id}>
+                {isLoading ? <Load>Loading...</Load> : <CoinList>
+                    {data?.slice(0, 100).map(item => <Coin key={item.id}>
                         <Link to={{
                             pathname: `/${item.id}`,
                             state: { name: item.name }
@@ -104,9 +102,8 @@ function Coins() {
                             <IMG src={`https://cryptoicon-api.vercel.app/api/icon/${item.symbol.toLowerCase()}`} />
                             {item.name} &rarr;</Link >
                     </Coin>)}
-                </CoinList> : <Load>Loading...</Load>}
+                </CoinList>}
             </Main>
-
         </Container>
     )
 }
