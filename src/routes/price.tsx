@@ -61,7 +61,7 @@ const Tag = styled.h3`
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: calc(.25vw + .8em);
+  font-size: calc(.20vw + .7em);
   font-weight: 600;
 `;
 
