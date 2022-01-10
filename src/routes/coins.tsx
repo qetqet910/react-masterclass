@@ -3,27 +3,61 @@ import { Link } from "react-router-dom"
 import { useQuery } from "react-query"
 import { CoinFetcher } from "../api"
 import { Helmet } from "react-helmet"
+import { useSetRecoilState } from "recoil"
+import { isDarkAtom } from "../atoms"
 
 const Title = styled.h1`
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
     display: inline;
-    color: ${props => props.theme.accentrColor};
+    color: ${props => props.theme.textColor};
     font-weight: bold;
     font-size: calc(1vw + 1.5em);
+`
+
+const ModeToggle = styled.button`
+    all:unset;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    right: 20%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding:6px;
+    background: ${props => props.theme.backgroundColor};
+    border-radius: 50%;
+    border: 1px solid ${props => props.theme.textColor};
+    transition: all .2s ease-in-out;
+    i{
+        color: ${props => props.theme.textColor};
+        transition: all .2s ease-in-out;
+    }
+    cursor: pointer;
+    &:hover{
+        color: ${props => props.theme.backgroundColor};
+        background: ${props => props.theme.textColor};
+        i{
+            color: ${props => props.theme.backgroundColor};
+
+        }
+    }
 `
 
 const Container = styled.div`
 
 `
 const Header = styled.header`
+    position: relative;
     width: 100%;
     height: calc(1vw + 2.6em);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: ${props => props.theme.textColor};
+    background: ${props => props.theme.backgroundColor};
     box-shadow: 0px -10px 30px ${props => props.theme.textColor};
-    color: black;
 `
+
 const Main = styled.main`
     max-width: 600px;
     margin 0 auto;
@@ -38,12 +72,14 @@ const Coin = styled.li`
     padding: 20px;
     border-radius: 10px;
     margin: 20px 20px;
-    background: white;
+    background: ${props => props.theme.backgroundColor};
+    box-shadow: 0px 0px 6px ${props => props.theme.textColor};
     a{
         display: flex;
         align-items: center;
         font-weight: bold;
         font-size: calc(1vw + .75em);
+        color: ${props => props.theme.textColor};
         transition: all .25s;
         &:hover{
             color: ${props => props.theme.accentrColor} 
@@ -82,7 +118,8 @@ interface ICoin {
 
 function Coins() {
     const { isLoading, data } = useQuery<ICoin[]>("FCoins", CoinFetcher)
-    console.log(data)
+    const setIsDark = useSetRecoilState(isDarkAtom)
+    const setDarkMode = () => setIsDark((cur) => !cur)
 
     return (
         <Container>
@@ -91,6 +128,9 @@ function Coins() {
             </Helmet>
             <Header>
                 <Title>다운비트</Title>
+                <ModeToggle onClick={setDarkMode}>
+                    <i className="far fa-moon"></i>
+                </ModeToggle>
             </Header>
             <Main>
                 {isLoading ? <Load>Loading...</Load> : <CoinList>
@@ -104,7 +144,7 @@ function Coins() {
                     </Coin>)}
                 </CoinList>}
             </Main>
-        </Container>
+        </Container >
     )
 }
 

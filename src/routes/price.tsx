@@ -42,7 +42,7 @@ const Container = styled.div`
 const Overview = styled.main`
   width: 100%;
   height: 50px;
-  background-color: ${props => props.theme.blockColor};
+  background-color: ${props => props.theme.backgroundColor};
   box-shadow: 0px 0px 4px ${props => props.theme.textColor};
   display: flex;
   padding: 10px 0px;
@@ -60,7 +60,7 @@ const Tag = styled.h3`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: ${props => props.theme.textColor};
   font-size: calc(.20vw + .7em);
   font-weight: 600;
 `;
