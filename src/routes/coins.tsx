@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { useQuery } from "react-query"
 import { CoinFetcher } from "../api"
 import { Helmet } from "react-helmet"
-import { useSetRecoilState } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import { isDarkAtom } from "../atoms"
 
 const Title = styled.h1`
@@ -118,6 +118,7 @@ interface ICoin {
 
 function Coins() {
     const { isLoading, data } = useQuery<ICoin[]>("FCoins", CoinFetcher)
+    const isDark = useRecoilValue(isDarkAtom)
     const setIsDark = useSetRecoilState(isDarkAtom)
     const setDarkMode = () => setIsDark((cur) => !cur)
 
@@ -129,7 +130,8 @@ function Coins() {
             <Header>
                 <Title>다운비트</Title>
                 <ModeToggle onClick={setDarkMode}>
-                    <i className="far fa-moon"></i>
+                    {isDark ? <i className="far fa-sun"></i> : <i className="far fa-moon"></i>}
+
                 </ModeToggle>
             </Header>
             <Main>
