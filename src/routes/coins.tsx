@@ -68,7 +68,7 @@ const CoinList = styled.ul`
     width: 100%;
 `
 const Coin = styled.li`
-    display; blcok;
+    display: blcok;
     padding: 20px;
     border-radius: 10px;
     margin: 20px 20px;
