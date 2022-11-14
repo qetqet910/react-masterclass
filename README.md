@@ -9,3 +9,6 @@
 > [React_helmet](https://www.npmjs.com/package/react-helmet)
 
 이미지 API 하나가 무지개다리를 건너벌임.;;
+
+2022 - 11 - 14 일
+여러가지 버전 문제, API 지원 문제, 라이브러리 지원 문제 등으로 호스팅 중단
